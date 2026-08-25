@@ -1,0 +1,408 @@
+/* Flow page — follows the site design system:
+   Rajdhani display type, Share Tech Mono body,
+   steel cards with corner brackets, existing CSS variables. */
+
+.page {
+  position: relative;
+  padding-top: 76px;
+}
+
+@media (max-width: 767px) {
+  .page { padding-top: 150px; }
+}
+
+.container {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: var(--sp8) var(--side) var(--sp8);
+}
+
+/* ===== HEADER ===== */
+
+.header {
+  text-align: center;
+  margin-bottom: var(--sp6);
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 18px;
+  background: rgba(0, 150, 255, .08);
+  border: 1px solid rgba(0, 220, 255, .38);
+  border-radius: 4px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  color: var(--cyan);
+  margin-bottom: var(--sp3);
+}
+
+.title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(24px, 4.6vw, 44px);
+  font-weight: 700;
+  letter-spacing: .05em;
+  line-height: 1.2;
+  margin: 0 0 var(--sp3);
+  color: var(--text);
+}
+
+.subtitle {
+  max-width: 720px;
+  margin: 0 auto 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(13px, 1.5vw, 15px);
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+
+/* ===== CONTROL PANEL ===== */
+
+.panel {
+  background: rgba(0, 10, 28, .88);
+  border: 1px solid rgba(0, 190, 230, .3);
+  border-radius: 6px;
+  padding: 6px 28px 24px;
+  position: relative;
+  margin-bottom: var(--sp4);
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 14px; height: 14px;
+  border-top: 2px solid rgba(0, 220, 255, .65);
+  border-left: 2px solid rgba(0, 220, 255, .65);
+}
+
+.panel::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 14px; height: 14px;
+  border-bottom: 2px solid rgba(0, 220, 255, .65);
+  border-right: 2px solid rgba(0, 220, 255, .65);
+}
+
+.controlRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  padding: 22px 0;
+}
+
+.controlLabel {
+  flex: 0 0 150px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  color: var(--cyan-soft);
+  padding-top: 10px;
+}
+
+.controlBody {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.controlHint {
+  margin-top: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.divider {
+  height: 1px;
+  background: rgba(0, 190, 230, .18);
+}
+
+/* ===== BUTTONS ===== */
+
+.btn, .btnGhost {
+  padding: 12px 26px;
+  min-width: 150px;
+  border-radius: 4px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.btn {
+  background: rgba(0, 150, 255, .12);
+  border: 1.5px solid var(--cyan);
+  color: var(--cyan);
+}
+
+.btn:hover:not(:disabled) { background: var(--cyan); color: var(--bg-deep); }
+.btn:disabled { opacity: .3; cursor: not-allowed; }
+
+.btnGhost {
+  background: transparent;
+  border: 1.5px solid rgba(0, 220, 255, .34);
+  color: var(--text-muted);
+}
+
+.btnGhost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ===== SEGMENTED CONTROL ===== */
+
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.segOn, .segOff {
+  padding: 9px 15px;
+  border-radius: 3px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  cursor: pointer;
+  transition: all .18s ease;
+}
+
+.segOn {
+  background: var(--cyan);
+  border: 1px solid var(--cyan);
+  color: var(--bg-deep);
+}
+
+.segOff {
+  background: transparent;
+  border: 1px solid rgba(0, 220, 255, .28);
+  color: var(--text-muted);
+}
+
+.segOff:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
+.segOn:disabled, .segOff:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ===== MESSAGES ===== */
+
+.msgOk, .msgError {
+  margin: 4px 0 0;
+  padding: 14px 16px;
+  border-radius: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.msgOk {
+  border-left: 2px solid var(--cyan);
+  background: rgba(0, 150, 255, .07);
+  color: var(--text);
+}
+
+.msgError {
+  border-left: 2px solid #ff5f6d;
+  background: rgba(255, 95, 109, .07);
+  color: #ffb3ba;
+}
+
+/* ===== STEPS ===== */
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: var(--sp4);
+}
+
+.step {
+  border: 1px solid rgba(0, 190, 230, .18);
+  border-left-width: 3px;
+  border-left-color: rgba(0, 190, 230, .25);
+  border-radius: 5px;
+  background: rgba(0, 10, 28, .7);
+  padding: 20px 22px;
+  transition: border-color .25s ease;
+}
+
+.pending { border-left-color: rgba(120, 140, 155, .4); }
+.running { border-left-color: var(--cyan); background: rgba(0, 150, 255, .06); }
+.success { border-left-color: #2fd47a; }
+.compensated { border-left-color: #f0a500; }
+.failed { border-left-color: #ff5f6d; }
+.skipped { border-left-color: rgba(120, 140, 155, .25); opacity: .55; }
+
+.stepHead {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.stepIndex {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  color: var(--cyan);
+}
+
+.stepName {
+  flex: 1 1 auto;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(14px, 1.8vw, 17px);
+  font-weight: 700;
+  letter-spacing: .07em;
+  color: var(--text);
+}
+
+.stepStatus {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  color: var(--cyan-soft);
+}
+
+.stepDesc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* ===== TRANSACTION ROWS ===== */
+
+.txRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(0, 190, 230, .14);
+  flex-wrap: wrap;
+}
+
+.txLabel, .txLabelComp {
+  flex: 0 0 auto;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  padding: 3px 9px;
+  border-radius: 3px;
+}
+
+.txLabel {
+  color: #2fd47a;
+  border: 1px solid rgba(47, 212, 122, .4);
+}
+
+.txLabelComp {
+  color: #f0a500;
+  border: 1px solid rgba(240, 165, 0, .4);
+}
+
+.txHash {
+  flex: 1 1 220px;
+  min-width: 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11.5px;
+  color: var(--text);
+  word-break: break-all;
+  opacity: .85;
+}
+
+.txLink {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 220, 255, .4);
+  border-radius: 3px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.txLink:hover { background: var(--cyan); color: var(--bg-deep); }
+
+.stepError {
+  margin-top: 10px;
+  padding: 10px 13px;
+  border-left: 2px solid #ff5f6d;
+  background: rgba(255, 95, 109, .07);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #ffb3ba;
+}
+
+/* ===== OUTCOME ===== */
+
+.outcomeOk, .outcomeComp, .outcomeBad {
+  padding: 20px 22px;
+  border-radius: 5px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  line-height: 1.75;
+  margin-bottom: var(--sp3);
+}
+
+.outcomeOk {
+  border: 1px solid rgba(47, 212, 122, .4);
+  background: rgba(47, 212, 122, .07);
+  color: var(--text);
+}
+
+.outcomeComp {
+  border: 1px solid rgba(240, 165, 0, .4);
+  background: rgba(240, 165, 0, .07);
+  color: var(--text);
+}
+
+.outcomeBad {
+  border: 1px solid rgba(255, 95, 109, .4);
+  background: rgba(255, 95, 109, .07);
+  color: #ffb3ba;
+}
+
+.outcomeOk strong, .outcomeComp strong, .outcomeBad strong {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  letter-spacing: .1em;
+}
+
+/* ===== DISCLAIMER ===== */
+
+.disclaimer {
+  margin: var(--sp4) 0 0;
+  padding-top: 22px;
+  border-top: 1px solid rgba(0, 190, 230, .16);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.75;
+  color: var(--cyan-soft);
+  text-align: center;
+}
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 640px) {
+  .container { padding: var(--sp6) var(--side); }
+  .panel { padding: 4px 18px 20px; }
+  .controlRow { flex-direction: column; gap: 10px; }
+  .controlLabel { flex: 1 1 auto; padding-top: 0; }
+  .btn, .btnGhost { width: 100%; }
+  .segmented { width: 100%; }
+  .segOn, .segOff { flex: 1 1 calc(50% - 3px); }
+  .step { padding: 18px 16px; }
+  .txRow { flex-direction: column; align-items: flex-start; }
+  .txLink { width: 100%; text-align: center; }
+}
