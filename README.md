@@ -30,6 +30,18 @@ transactions on-chain, not zero. That is the audit trail, and it is the point.
 3. Open https://cosmosledgerlabs.com/flow, connect, set FAILURE INJECTION to **FAIL AT 3**, run the flow
 4. Click VERIFY on any transaction — it resolves on Solscan (devnet)
 
+## Verified transactions
+
+Flow ID: MT7X9IP0-QICF (run 2026-08-25, FAIL AT 3)
+
+| Step | Action | Signature |
+|---|---|---|
+| 1 · Approve | Executed | https://solscan.io/tx/4gpbEAsai6oMqhs5TetfkhCJf3LBsZqABptTvEfZA8cLsbSFUeDCkqSkvAWNJpknpsRCbUKgfQjqijCFZ3zjXY6U?cluster=devnet |
+| 1 · Approve | Compensated | https://solscan.io/tx/5TVnZQCVX43UCtM3TJgD5ZNGuNPdoh9Ymgvgsqd1woPCxSvqJxdakJqHmVtt1isJKKkUnpTGnRy2djdTSciEApZE?cluster=devnet |
+| 2 · Vesting | Executed | https://solscan.io/tx/1XZBEiiUVRdR78xeeCTQPtgri33U1Sk1EBn5sfvxscTGxBVajPESE2zuk7khACFf2QqudTrKqgfWy2zBx4F6pAS?cluster=devnet |
+| 2 · Vesting | Compensated | https://solscan.io/tx/5QTFj5t8pWrf1nJQ8cTsub5gWUd57x5vPHq1Kd6uj56GyGwegjVVwx28zBELHWy7DQrcek4vwDgCbng8HhoUDeC1?cluster=devnet |
+| 3 · Distribution | Failed (injected) | — |
+
 ## Structure
 
 | File | Purpose |
