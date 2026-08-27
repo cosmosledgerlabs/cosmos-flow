@@ -4,12 +4,10 @@ import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 import { STEPS, newFlowId } from '../lib/steps'
 import { runFlow, initSteps, STATUS, FLOW_STATE, readableError } from '../lib/orchestrator'
+import { runSetup, readBalance, FLOW_AMOUNT, INITIAL_SUPPLY } from '../lib/spl'
 import styles from '../styles/Flow.module.css'
 
 const CLUSTER = 'devnet'
-// Public devnet node by default. To use a dedicated node (recommended — the
-// public one rate-limits), set NEXT_PUBLIC_SOLANA_RPC in Vercel → Settings →
-// Environment Variables and redeploy. No code change needed.
 const RPC = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com'
 const EXPLORER = 'https://solscan.io'
 
@@ -42,6 +40,9 @@ export default function FlowPage() {
   const [failAt, setFailAt] = useState(0)
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
+  const [accounts, setAccounts] = useState(null)
+  const [setupSigs, setSetupSigs] = useState([])
+  const [balances, setBalances] = useState(null)
 
   function getProvider() {
     if (typeof window === 'undefined') return null
@@ -76,7 +77,58 @@ export default function FlowPage() {
     const provider = getProvider()
     if (provider) { try { await provider.disconnect() } catch (e) {} }
     setWallet(null)
+    setAccounts(null)
+    setSetupSigs([])
+    setBalances(null)
     reset()
+  }
+
+  async function refreshBalances(acc) {
+    if (!acc) return
+    try {
+      const web3 = await import('@solana/web3.js')
+      const connection = new web3.Connection(RPC, 'confirmed')
+      const [a, b, c] = await Promise.all([
+        readBalance(web3, connection, acc.ownerAta),
+        readBalance(web3, connection, acc.escrowAta),
+        readBalance(web3, connection, acc.recipientAta),
+      ])
+      setBalances({ owner: a, escrow: b, recipient: c })
+    } catch (e) {
+      setBalances(null)
+    }
+  }
+
+  async function doSetup() {
+    const provider = getProvider()
+    if (!provider || !wallet) { say('Connect a wallet first.', true); return }
+
+    setBusy(true)
+    say('Creating token and accounts — the wallet will prompt once…', false)
+
+    try {
+      const web3 = await import('@solana/web3.js')
+      const spl = await import('@solana/spl-token')
+      const connection = new web3.Connection(RPC, 'confirmed')
+      const owner = new web3.PublicKey(wallet)
+
+      const balance = await connection.getBalance(owner)
+      if (balance < 20000000) {
+        say('Not enough Devnet SOL for setup. Request more at faucet.solana.com (setup needs about 0.02 SOL).', true)
+        setBusy(false)
+        return
+      }
+
+      const acc = await runSetup({ web3, spl, connection, provider, owner })
+      setAccounts(acc)
+      setSetupSigs(acc.signatures)
+      await refreshBalances(acc)
+      say('Setup complete. ' + INITIAL_SUPPLY + ' test tokens minted to your account.', false)
+    } catch (e) {
+      say('Setup failed: ' + readableError(e), true)
+    } finally {
+      setBusy(false)
+    }
   }
 
   function reset() {
@@ -89,6 +141,7 @@ export default function FlowPage() {
   async function start() {
     const provider = getProvider()
     if (!provider || !wallet) { say('Connect a wallet first.', true); return }
+    if (!accounts) { say('Run SETUP first — the flow moves real SPL tokens.', true); return }
 
     setBusy(true)
     reset()
@@ -99,10 +152,11 @@ export default function FlowPage() {
 
     try {
       const web3 = await import('@solana/web3.js')
+      const spl = await import('@solana/spl-token')
       const connection = new web3.Connection(RPC, 'confirmed')
       const pubkey = new web3.PublicKey(wallet)
 
-      const balance = await connection.getBalance(pubkey, 'confirmed')
+      const balance = await connection.getBalance(pubkey)
       if (balance <= 0) {
         say('This wallet holds no Devnet SOL. Request test tokens at faucet.solana.com and try again.', true)
         setBusy(false)
@@ -115,10 +169,12 @@ export default function FlowPage() {
         provider,
         pubkey,
         stepDefs: STEPS,
-        ctx: { flowId: id, amount: '1000' },
+        ctx: { flowId: id, amount: FLOW_AMOUNT, accounts, spl },
         failAt,
         onUpdate: (s, fs) => { setSteps(s); setFlowState(fs) },
       })
+
+      await refreshBalances(accounts)
 
       if (result.flowState === FLOW_STATE.COMPLETED) {
         say('All three steps completed. Every transaction is verifiable on Solscan.', false)
@@ -167,10 +223,11 @@ export default function FlowPage() {
               earlier ones stay on-chain.
             </p>
             <p className={styles.subtitle}>
-              This runs the sequence, and on failure executes real on-chain
-              compensating transactions for the steps already completed. Nothing is
-              deleted — a chain cannot delete. Each compensation is a new,
-              independently verifiable transaction.
+              This runs the sequence with real SPL token transfers, and on failure
+              executes real on-chain compensating transactions for the steps already
+              completed. Nothing is deleted — a chain cannot delete. Each compensation
+              is a new, independently verifiable transaction, and the token balances
+              return to where they started.
             </p>
           </header>
 
@@ -184,6 +241,28 @@ export default function FlowPage() {
                 ) : (
                   <button className={styles.btn} onClick={connect}>CONNECT</button>
                 )}
+              </div>
+            </div>
+
+            <div className={styles.divider} />
+
+            <div className={styles.controlRow}>
+              <div className={styles.controlLabel}>SETUP</div>
+              <div className={styles.controlBody}>
+                {accounts ? (
+                  <button className={styles.btnGhost} onClick={doSetup} disabled={busy}>
+                    RE-RUN SETUP
+                  </button>
+                ) : (
+                  <button className={styles.btn} onClick={doSetup} disabled={!wallet || busy}>
+                    RUN SETUP
+                  </button>
+                )}
+                <div className={styles.controlHint}>
+                  Creates a test SPL token, mints {INITIAL_SUPPLY} to your account,
+                  and opens an escrow and a recipient account. One wallet prompt.
+                  Needed once before running the flow.
+                </div>
               </div>
             </div>
 
@@ -237,6 +316,64 @@ export default function FlowPage() {
               <div className={isError ? styles.msgError : styles.msgOk}>{message}</div>
             ) : null}
           </section>
+
+          {/* ---------- accounts and balances ---------- */}
+          {accounts ? (
+            <section className={styles.verify}>
+              <h2 className={styles.verifyTitle}>TOKEN ACCOUNTS</h2>
+              <p className={styles.verifyIntro}>
+                Real SPL token accounts on Solana devnet. Balances update after every run.
+                Each flow moves {FLOW_AMOUNT} tokens.
+              </p>
+
+              <div className={styles.verifyRow}>
+                <span className={styles.verifyKey}>Mint</span>
+                <span className={styles.verifyVal}>{accounts.mint}</span>
+                <a className={styles.verifyBtn}
+                   href={EXPLORER + '/token/' + accounts.mint + '?cluster=' + CLUSTER}
+                   target="_blank" rel="noopener noreferrer">VIEW</a>
+              </div>
+
+              <div className={styles.verifyRow}>
+                <span className={styles.verifyKey}>
+                  Your account{balances ? ' — ' + balances.owner : ''}
+                </span>
+                <span className={styles.verifyVal}>{accounts.ownerAta}</span>
+                <a className={styles.verifyBtn}
+                   href={EXPLORER + '/account/' + accounts.ownerAta + '?cluster=' + CLUSTER}
+                   target="_blank" rel="noopener noreferrer">VIEW</a>
+              </div>
+
+              <div className={styles.verifyRow}>
+                <span className={styles.verifyKey}>
+                  Escrow{balances ? ' — ' + balances.escrow : ''}
+                </span>
+                <span className={styles.verifyVal}>{accounts.escrowAta}</span>
+                <a className={styles.verifyBtn}
+                   href={EXPLORER + '/account/' + accounts.escrowAta + '?cluster=' + CLUSTER}
+                   target="_blank" rel="noopener noreferrer">VIEW</a>
+              </div>
+
+              <div className={styles.verifyRow}>
+                <span className={styles.verifyKey}>
+                  Recipient{balances ? ' — ' + balances.recipient : ''}
+                </span>
+                <span className={styles.verifyVal}>{accounts.recipientAta}</span>
+                <a className={styles.verifyBtn}
+                   href={EXPLORER + '/account/' + accounts.recipientAta + '?cluster=' + CLUSTER}
+                   target="_blank" rel="noopener noreferrer">VIEW</a>
+              </div>
+
+              {setupSigs.map((s2) => (
+                <div key={s2.signature} className={styles.verifyRow}>
+                  <span className={styles.verifyKey}>{s2.label}</span>
+                  <span className={styles.verifyVal}>{s2.signature}</span>
+                  <a className={styles.verifyBtn} href={txUrl(s2.signature)}
+                     target="_blank" rel="noopener noreferrer">VIEW</a>
+                </div>
+              ))}
+            </section>
+          ) : null}
 
           {/* ---------- steps ---------- */}
           <section className={styles.steps}>
@@ -299,8 +436,11 @@ export default function FlowPage() {
 
           <p className={styles.disclaimer}>
             Devnet is a public test network. Tokens on Devnet have no monetary value.
-            This demonstration does not constitute an offer to sell or a solicitation
-            to buy any security or digital asset.
+            The escrow account in this demonstration is held by a keypair generated in
+            the browser — sufficient to show funds genuinely leaving and returning, but
+            not a trustless escrow. A production version would use a program-derived
+            address. This demonstration does not constitute an offer to sell or a
+            solicitation to buy any security or digital asset.
           </p>
 
         </div>
