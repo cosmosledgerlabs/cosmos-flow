@@ -1,0 +1,199 @@
+Runs 01–20 below were made after Test A (Flow MTBRIHBB-2N3A, NONE), Test B
+(Flow MTBS0DVS-BA1W, FAIL AT 3) and Test C (FAIL AT 2) on the same mint;
+the starting balances 999000 / 0 / 1000 reflect those three runs.
+-------
+Run 01| 2026-08-28 01:40 | NONE
+Result: completed
+Balances before: owner 999000 / escrow 0 / recipient 1000
+Balances after:  owner 998000 / escrow 0 / recipient 2000
+  Step 1: https://solscan.io/tx/56UCMKUreYsMgLozo5ukDWJj241Kfrdk7TEkgWGkgmpzHeJhQZqqjP5F5d7hpEeX4DrjbifMRVxVHs1fc4SwHXh7?cluster=devnet
+  Step 2: https://solscan.io/tx/5KgohsK1ZXaCNwBovCvVsKjzvfgk4mDRW7S1JJsGVTJPGMnnoLVjgZjUtTSxfREKx8is7TATWjcWNezdYmRxyZuL?cluster=devnet
+  Step 3: https://solscan.io/tx/4vhnXPaqZ8j9vMzpm6HidZAMjatfwUThWNwcqcfaXpGggN1HqDv6UZvuR3zQ3dy3nKFhiM5YSRkGEkiSzbVE5X9L?cluster=devnet
+---
+Run 02 | 2026-08-28 01:50 | FAIL AT 3
+Result: failed and compensated
+Balances before: owner 998000 / escrow 0 / recipient 2000
+Balances after:  owner 998000 / escrow 0 / recipient 2000   <- unchanged
+  Step 1 executed:    https://solscan.io/tx/3SjYpnZSrHeqJh4XMLmPxHteZPQuc7oKBdWFmQFndn31USewo68nt1CYwB73UGjF1HeJRsSMB5cR7wTAo1bY9gmj?cluster=devnet
+  Step 1 compensated: https://solscan.io/tx/5EGtAgTXjDdmrtgEEgonHFpXHBg2RyyM6svDeSEhbSTR7JSPSNuHG1VtBrs8a3Xeb7LPj2Dq1yGV4dw7seSzyBG8?cluster=devnet
+  Step 2 executed: https://solscan.io/tx/5Qzq5vMxNFrKpNPpBRzjZEA2a69UJkM8fdL6DLvQ3NhnZf8FjhPuUqHo8x5WqszqMesWCQ9XVykoPojhbW8uYbeg?cluster=devnet
+  Step 2 compensated:https://solscan.io/tx/2SYEfPas6Tsbpv7d5ApW2JtQLT1LBzZwnxXqKdJwUVDJS1j4Gu6nE61cRiqoL7WY79n9uxVTXo4LRhLfY1EFLpgV?cluster=devnet
+  Step 3: failed (injected)
+---
+Run 03 | 2026-08-28 2:10 AM | FAIL AT 2
+Result: failed and compensated
+Balances before:owner 998000 / escrow 0 / recipient 2000
+Balances after: 998000 /escrow 0 / recipient 2000 unchanged 
+  Step 1 executed:    https://solscan.io/tx/Bniqjwvs6tMfgpQ4FFLeZfmDFhHevtZKycqDGHScfpcRvB5o19UJwhKPuwNdMTTgLDczFigb1BaBujZA6jNg3du?cluster=devnet
+  Step 1 compensated: https://solscan.io/tx/DeacRhKtCSAiRWwtJgPvea5xpMTya2Z8365z2zQoEyP7Y9PQSBRSN2mPtgQ9DnkZHtJ1zEpC4rfYqMv16JSSpzn?cluster=devnet
+  Step 2: failed (injected)
+  Step 3: not run
+-----
+Run 04 | 2026-08-28 02:21 | FAIL AT 1
+Result: failed, nothing to compensate
+Balances before: owner 998000 / escrow 0 / recipient 2000
+Balances after:  ...   <- unchanged
+  Step 1: failed (injected)
+  Step 2: not run
+  Step 3: not run
+
+---
+Run 05 | 2026-08-28 2:23 am  | NONE
+Result: completed
+Balances before: owner 998000 / escrow 0 / recipient 2000
+Balances after:  owner 997000 / escrow 0 / recipient 3000
+  Step 1: https://solscan.io/tx/5qZyGEkdkp2FceS3nFMike1dww8FMTarZrySJp6jHkDxh95bBN1e2PRqYfuxiCAi86w268BKrsGue7kXzju9dDWb?cluster=devnet
+  Step 2: https://solscan.io/tx/4DTL1c1nqtgDGUEkWDP6Sv6Rq4vdhbhNsQrvU7bXncsbPoiweTL68hvaffbnY66n6F4NZqF9G5rcfNcYGatN9Axd?cluster=devnet
+  Step 3: https://solscan.io/tx/5FxgGg9b9rXW3BDVcJL5ExVo1xQzSyqJ7p5cNXP9qDYzvgc98hMj8HoTem3zGPzeF3c9hQMtJa1q2oNTT1sTqDqV?cluster=devnet
+
+---
+Run 06 | 2026-08-28 2:30am | FAIL AT 2
+Result: failed and compensated
+Balances before: owner 997000 / escrow 0 / recipient 3000
+Balances after:  ...   <- unchanged
+  Step 1 executed:    https://solscan.io/tx/puUJKoDJYaikm2DWe8A8MYcJN1pRxMpboThtCxrS9ewKAMvHo6MAEHXEYtTkBFyzPQY1F4yBciD2uYhsiQxvHG4?cluster=devnet
+  Step 1 compensated: https://solscan.io/tx/4QYVmrosdjeQ9TRzzmXCGkrJEBBRcUSk8rNzxmprhXkE6QYek3xAopBRgEGDVV6Ep7pX5dCTrv9Lnz9PiyFHGCbx?cluster=devnet
+  Step 2: failed (injected)
+  Step 3: not run
+
+---
+Run 07| 2026-08-28 02:35 | FAIL AT 1
+Result: failed, nothing to compensate
+Balances before: ...997000 / escrow 0 / recipient 3000
+Balances after:  ...   <- unchanged
+  Step 1: failed (injected)
+  Step 2: not run
+  Step 3: not run
+
+---
+Run 08 | 2026-08-28 02:37| FAIL AT 3
+Result: failed and compensated
+Balances before: owner 997000 / escrow 0 / recipient 3000
+Balances after:  owner 997000 / escrow 0 / recipient 3000   <- unchanged
+  Step 1 executed: https://solscan.io/tx/2WEYDSxeR4XAA9uVcJ4zdGsW9ndktFG3VBFVoQmzb7BNFvVuLQMcdAoTUPgFor3AbumjYnoFdy4XfNjYgMkeaKCj?cluster=devnet
+  Step 1 compensated:https://solscan.io/tx/4L2YpMWHVkUzm6NzfUPwgoD5jtg7jZpqNKaGVPTUdDGgYT8LfWhZzNJBgVoBCr6bh2mdEarhUbSMM179LfdkV7Rk?cluster=devnet
+  Step 2 executed: https://solscan.io/tx/2mN4aNq7BAuZdW14MDPNciTzuoGATDhz566MD4xzroK9t8XPsMbcjSHDSua2tGNVthd9GyQHVGfAHvjY6xsX5MYx?cluster=devnet
+  Step 2 compensated: https://solscan.io/tx/4Wq4gYAh3ugrSwfuDzTPGNz2VikUSfAdKYC9MLMfNENuKGGz5JammZWxcTdZMpTvs2PGjWZ5t5H6a3k3yLa91EKy?cluster=devnet
+  Step 3: failed (injected)
+-----------------------
+Run 09| 2026-08-28 02:44 | FAIL AT 1
+Result: failed, nothing to compensate
+Balances before: ...997000 / escrow 0 / recipient 3000
+Balances after:  ...   <- unchanged
+  Step 1: failed (injected)
+  Step 2: not run
+  Step 3: not run
+---
+Run 10| 2026-08-28 02:45 | NONE
+Result: completed
+Balances before: owner 997000 / escrow 0 / recipient 3000
+Balances after:  owner 996000 / escrow 0 / recipient 4000
+  Step 1: https://solscan.io/tx/3URuUnRE6iknksvm21QPRnUFRFQpe67na6V712eQyvxCW6CcRM83Jtq4bD3wGzEeHCiuyXwYwzij83roqnbw479B?cluster=devnet
+  Step 2: https://solscan.io/tx/3A1Rxtxhuw13dz7faGS2JFwm2AU3ACXr4cyyC1htvXi75iipvYvjk8BxchPy6uspyLNdkvxNBJX1FzeGieihxSqg?cluster=devnet
+  Step 3: https://solscan.io/tx/4jjqgQYAKDhGgb4cB1GVR1V8ExcjHnTwj5PWb6bxMoTzZTih78YKDcj9E6JdEUzd4jxT6bCoixS5STxXvz5t3ioP?cluster=devnet
+---
+Run 11 | 2026-08-28 02:50 Am | FAIL AT 3
+Result: failed and compensated
+Balances before: owner 996000 / escrow 0 / recipient 4000
+Balances after:  owner 996000 / escrow 0 / recipient 4000   <- unchanged
+  Step 1 executed:  https://solscan.io/tx/yZAD6DHpjzcgyy1L7Lc1LTC2bWnZqu55Y9uSZzYiA5MyLGWHdshZrX6pFgPcGbYqrPKGgeAHC5A5XSdZgoT1ttp?cluster=devnet
+  Step 1 compensated: https://solscan.io/tx/BcQucBEbPDUvsLV45NJPXpdo1LPREqJUBdk96Mso3GnZhj5bZXCkt69fYsBX6PCrBnBfCGUez4qWbbuDSZgKZgm?cluster=devnet
+  Step 2 executed:   https://solscan.io/tx/LkGRy749dB2dxKQYvkVfMZNcL8Hg99LfiWgVYVfCzoJ9GnFQcqPpxgNtmfJaTdYuRi4GH745X5SheLjTT6QJA5W?cluster=devnet
+  Step 2 compensated: https://solscan.io/tx/ckm8QaQP42urYNJ9dCyrHaYFuZa1ke2TaUDEtdxRuxjaZgeQdjNHBTjmFyE8omWyuq3JG3jWef29Fsj7bj7uPCy?cluster=devnet
+  Step 3: failed (injected)
+---
+Run 12 | 2026-08-28 2:55 | FAIL AT 2
+Result: failed and compensated
+Balances before: owner 996000 / escrow 0 / recipient 4000
+Balances after:  owner 996000 / escrow 0 / recipient 4000   <- unchanged
+  Step 1 executed:  https://solscan.io/tx/4pqrgZme74GZw5p58LfqiSKBQEcaJK5w8iyH7MCnRV7KUHBVo6Jo5Z9bMc1vPEVTkVgr69F23qtVmHx71rv3M45F?cluster=devnet
+  Step 1 compensated:https://solscan.io/tx/hvu3kAxLdAcQVDuTyvzA4BqzU3bxNCxYQ1Vihjr8VJdFE8Xs9Wi3pN6upyWs2iboykzzroxBkHZDLMtRBYPKZVg?cluster=devnet
+  Step 2: failed (injected)
+  Step 3: not run
+---
+Run 13 | 2026-08-28 03:00 | NONE
+Result: completed
+Balances before: owner 996000 / escrow 0 / recipient 4000
+Balances after:  owner 995000 / escrow 0 / recipient 5000
+  Step 1: https://solscan.io/tx/52rWVy6v9UAaJwQXYg6DMakVH6PxWpC8cNf6Mpfx6DCHt3oxx7op4E62i1kCJbnV4Rq8C6Mp5BBVzSKx5UxE2kJ4?cluster=devnet
+  Step 2: https://solscan.io/tx/5ZwmPqhTHJpoYyjBVmgo8twn6Q7h7E2DjNfdYMBmAwrGXMtbMUtgbjzTrwrFX6ANK4N397eZWGyZz6WTraiZJgxG?cluster=devnet
+  Step 3: https://solscan.io/tx/3EUCSAcAiX2KwtZWx5h4bwKUQjvQEqMYaisxjD7VKEHCLGR7QZYx8ASr13J4cbPUujr7rWFimMVQvhAQPRuj5b7k?cluster=devnet
+---
+Run 14 | 2026-08-28 3:13 | FAIL AT 3
+Result: failed and compensated
+Balances before: owner 995000 / escrow 0 / recipient 5000
+Balances after:  owner 995000 / escrow 0 / recipient 5000   <- unchanged
+  Step 1 executed:  https://solscan.io/tx/4cxBq9PoLQujCSp9e2ZNVmkQmLvGNTCnVna1q96psy7K2A9z54cLvi925x5AuhoTLGGNtwkSjVo5NjkLuNDCMUCm?cluster=devnet
+  Step 1 compensated: https://solscan.io/tx/4SG2W4vpgppo8PacXfua1MXUSpqHLoPTjfm6EczZVR73EjkPzg2GEEvWEDUU9mMsX6WFkvQqJNDssEw59ad5rzZQ?cluster=devnet
+  Step 2 executed:   https://solscan.io/tx/gKu2XgTQ1uh5rs8FeP5jSbos917z5Wd3rfxoXRz8xQHVfy4btZki8kzPkdA5PDZqt2wbiecoZ3rygZuSrxUZKxu?cluster=devnet
+  Step 2 compensated:https://solscan.io/tx/5buGzeTyiaArRYAfVtmPbpgVDhV6ZVWdDw7NrCD2xkNr85Ev7Kc4RU4qyeo8rTY4j3EWBZjJdUTujkejFEtfdmD6?cluster=devnet
+  Step 3: failed (injected)
+---
+Run 15 | 2026-08-28 3:27 AM| FAIL AT 2
+Result: failed and compensated
+Balances before: owner 995000 / escrow 0 / recipient 5000
+Balances after:  ...   <- unchanged
+  Step 1 executed:  https://solscan.io/tx/5o5ioBdvPwDphWL1K8uzu3AXNjtrj4peNZJVdDkfZvRjPtApcsvzXWfspvyuvamRwTJzn5w1TroG7F5o5WrbqaSv?cluster=devnet
+  Step 1 compensated: https://solscan.io/tx/5Jt8XsVVQi32trSLDmhgqxvQFvu81CEox2KgTUm1MtbWXU259MsAKxJ5wCejpN3yvSWdFrGbeW3JGTfSC4ikd2WX?cluster=devnet
+  Step 2: failed (injected)
+  Step 3: not run
+---
+Run 16 | 2026-08-28 03:40 AM | NONE
+Result: completed
+Balances before: owner 995000 / escrow 0 / recipient 5000
+Balances after:  owner 994000 / escrow 0 / recipient 6000
+  Step 1: https://solscan.io/tx/Qy59TuhSmyhH5ujCvHAqZdUHz8G8a8kAasfP9rqvnkZ2xsa2EYeaj2Fz6o5iGs44nu1sP7YK9DQobsBKJMLtdzY?cluster=devnet
+  Step 2: https://solscan.io/tx/2MYmuGz2M8B1KbtYGsQMMrfvH1CyZqHpLRb15ue7Ee88h8nQpQqBpUq5ujMuXiFkjP68B89eVMqsySW8Ag8tfGPk?cluster=devnet
+  Step 3: https://solscan.io/tx/2TvCRao4Frs8J8zTXohD9KAkZBa5zJntwQLjdcPYE9yyLdZbSGuLyMmdnGk77pPrmY6Gb77mZ1YcG4f1LridtqfR?cluster=devnet
+---
+Run 17 | 2026-08-28 03:51| FAIL AT 3
+Result: failed and compensated
+Balances before: owner 994000 / escrow 0 / recipient 6000
+Balances after:  owner 994000 / escrow 0 / recipient 6000   <- unchanged
+  Step 1 executed:  https://solscan.io/tx/5rRgJTZ7hjnLm5oKAATKHjRfLgNDnaBUMLU6zZqAe6gvu3wSYrybMcM1zNpvNuCs6hSZQNjHkneBCNJPh9txFQE?cluster=devnet
+  Step 1 compensated:https://solscan.io/tx/5mopSGpVunfnPkYhi3YsiBXBFYeKELpo5mAZKR2ewLnpP5yo4hH1LtWt6fH7htSf5ZF8b5BBz5NcD9fA1guom24p?cluster=devnet
+  Step 2 executed:  https://solscan.io/tx/5Nod7w2kJkoKdoAShuTfLJj35jyYEMMtMT7Gz3XaKeUnHYT6mmEAC4XZugthpSCJu181oXNsrFjS9tBsfcBdEiEC?cluster=devnet
+  Step 2 compensated: https://solscan.io/tx/4yo8iG6rzSUS5ot4m81qv93uiDoFBu4nXqmtTrR9FCrWVzWr9Nu8JgnidQ3FJpAgqYBAmGkWzdxhJx8bc1VjERqY?cluster=devnet
+  Step 3: failed (injected)
+---
+Run 18| 2026-08-28 04:04 AM | NONE
+Result: completed
+Balances before: owner 994000 / escrow 0 / recipient 6000
+Balances after:  owner 993000 / escrow 0 / recipient 7000
+  Step 1:https://solscan.io/tx/xscePP5SS84MZvL4WEwyZMZX7BWpA7KbYb8EcZiokzF7rhF2rpxU2Tdm7zgkccDQc1hEvgs1xJqHkZehJTUVXhu?cluster=devnet
+  Step 2:https://solscan.io/tx/2drCXBgSCTDh1CJScBHEFeoZJYuPcyc3khVkGCxbQ1MQ82AoBN75Q8DnyrTe8edtVb7SWL4D6ELuURfT8fsmstJt?cluster=devnet
+  Step 3:https://solscan.io/tx/5QNCxwsKB6WGy89XVcWwU2E1tcHtawGAsHcasuWncGyVt7KNzhapV3RhcxVwPVn1pS1BQJ7ScMrvMv8KaYMh8Pf3?cluster=devnet
+---
+Run 19 | 2026-08-28 04:13 AM | FAIL AT 2
+Result: failed and compensated
+Balances before:owner 993000 / escrow 0 / recipient 7000
+Balances after:  ...   <- unchanged
+  Step 1 executed:  https://solscan.io/tx/2xbrTQbeZoKNYiTtXn7D3HTxEyCGTuGGQAMUumo2grCS6qwTgHZJxtL8LcdpCYocaT6kZkwxe6hQoWmVqpobj2SG?cluster=devnet
+  Step 1 compensated: https://solscan.io/tx/5RD3jM3m3naoNyZ37RUDmUHUW6ZjBFvtWJ6sJYfNWSVHtHdxLZoJRCSPW5PzAXX8S1YU9qHkLDGw9xscEJ7qDtGJ?cluster=devnet
+  Step 2: failed (injected)
+  Step 3: not run
+---
+Run 20 | 2026-08-28 04:18 | FAIL AT 3
+Result: failed and compensated
+Balances before: owner 993000 / escrow 0 / recipient 7000
+Balances after:  owner 993000 / escrow 0 / recipient 7000   <- unchanged
+  Step 1 executed:  https://solscan.io/tx/56unwovEbrvPGj9JrgQkdUzAGqgrmmKtYzPRMRuG9ByAHLcR48oQFH9VHPiDUFc1uwTargyS9mBVKFngypuBvLYj?cluster=devnet
+  Step 1 compensated:https://solscan.io/tx/5C55uyDUnoT4DWkuu8myD78izrDtBrj4nuh32igqXgug5ktY6PdWBrWMTxpQ9JmDzC42yHYEJazJmrQuCajXvWfo?cluster=devnet
+  Step 2 executed: https://solscan.io/tx/47CDN2MaQARhSxwQDvaP6Q6P8x6bjWMu8vijXm5QooQqg174pW8eQZu2Wm46b5Pgzx4BmC8JNNqFfiEXn9AmCX1r?cluster=devnet
+  Step 2 compensated: https://solscan.io/tx/4um5aYNd5rfJfiCafngmRDFVR9d7cEocvATzmGuepQ5jrA8g1i9JmzYDwFwwsBRvA9XMK1P6YVdCBwKXPy4WUWY4?cluster=devnet
+  Step 3: failed (injected)
+
+=== SUMMARY ===
+Total logged runs: 20  (plus Tests A, B, C on the same mint = 23 flows, 61 transactions)
+Completed (NONE): 6
+Failed and compensated: 14  (FAIL AT 3: 6, FAIL AT 2: 5, FAIL AT 1: 3)
+On-chain transactions in this log: 52  (NONE 18, FAIL AT 3 24, FAIL AT 2 10, FAIL AT 1 0)
+Balance integrity: 20/20 runs ended at the expected balances
+  - every NONE run: owner -1000, recipient +1000, escrow 0
+  - every FAIL run: all three balances unchanged; escrow returned to 0 after each FAIL AT 3
+Start balances: owner 999000 / escrow 0 / recipient 1000
+End balances:   owner 993000 / escrow 0 / recipient 7000
+Mint: 6rn21mvqWa1p8pQnHYRGT2Zip9pS1osWf7VJ6X7hbTh1
+Period: 2026-08-28 01:40 – 04:18 (local)
+Anomalies: none
+
