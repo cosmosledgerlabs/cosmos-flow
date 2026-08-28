@@ -43,6 +43,7 @@ export default function FlowPage() {
   const [accounts, setAccounts] = useState(null)
   const [setupSigs, setSetupSigs] = useState([])
   const [balances, setBalances] = useState(null)
+  const [runHistory, setRunHistory] = useState([])
 
   function getProvider() {
     if (typeof window === 'undefined') return null
@@ -83,6 +84,95 @@ export default function FlowPage() {
     reset()
   }
 
+  // Read all three account balances and return a snapshot
+  async function snapshotBalances(acc) {
+    if (!acc) return null
+    try {
+      const web3 = await import('@solana/web3.js')
+      const connection = new web3.Connection(RPC, 'confirmed')
+      const [a, b, c] = await Promise.all([
+        readBalance(web3, connection, acc.ownerAta),
+        readBalance(web3, connection, acc.escrowAta),
+        readBalance(web3, connection, acc.recipientAta),
+      ])
+      return { owner: a, escrow: b, recipient: c }
+    } catch (e) {
+      return null
+    }
+  }
+
+  // Export every run in this session as a text file - no copying signatures by hand
+  function exportLog() {
+    if (runHistory.length === 0) return
+
+    const L = []
+    L.push('COSMOS Flow v2 — Run Log')
+    L.push('Network: Solana devnet')
+    L.push('Wallet: ' + wallet)
+    if (accounts) {
+      L.push('Mint: ' + accounts.mint)
+      L.push('Owner account: ' + accounts.ownerAta)
+      L.push('Escrow account: ' + accounts.escrowAta)
+      L.push('Recipient account: ' + accounts.recipientAta)
+    }
+    L.push('Exported: ' + new Date().toISOString())
+    L.push('')
+
+    runHistory.forEach((r) => {
+      L.push('---')
+      L.push('Run ' + String(r.run).padStart(2, '0') + ' | ' + r.time + ' | ' + r.injection)
+      L.push('Flow ID: ' + r.flowId)
+      L.push('Result: ' + r.outcome)
+      if (r.balancesBefore) {
+        L.push('Before: owner ' + r.balancesBefore.owner +
+               ' / escrow ' + r.balancesBefore.escrow +
+               ' / recipient ' + r.balancesBefore.recipient)
+      }
+      if (r.balancesAfter) {
+        L.push('After:  owner ' + r.balancesAfter.owner +
+               ' / escrow ' + r.balancesAfter.escrow +
+               ' / recipient ' + r.balancesAfter.recipient +
+               (r.balanceReturned ? '   <- returned to start' : ''))
+      }
+      r.steps.forEach((st, i) => {
+        if (st.executed) L.push('  Step ' + (i + 1) + ' executed:    ' + st.executed)
+        if (st.compensated) L.push('  Step ' + (i + 1) + ' compensated: ' + st.compensated)
+        if (!st.executed && !st.compensated) L.push('  Step ' + (i + 1) + ': ' + st.status)
+      })
+      L.push('')
+    })
+
+    const total = runHistory.length
+    const done = runHistory.filter((r) => r.outcome === FLOW_STATE.COMPLETED).length
+    const comp = runHistory.filter((r) => r.outcome === FLOW_STATE.FAILED_COMPENSATED).length
+    const bad = runHistory.filter((r) => r.outcome === FLOW_STATE.FAILED_INCOMPLETE).length
+    const txs = runHistory.reduce((n, r) =>
+      n + r.steps.filter((st) => st.executed).length +
+          r.steps.filter((st) => st.compensated).length, 0)
+    const kept = runHistory.filter((r) => r.balanceReturned === true).length
+    const checked = runHistory.filter((r) => r.balanceReturned !== null).length
+
+    L.push('========================================')
+    L.push('SUMMARY')
+    L.push('Total runs:                  ' + total)
+    L.push('Completed successfully:      ' + done)
+    L.push('Failed and compensated:      ' + comp)
+    L.push('Compensation failures:       ' + bad)
+    L.push('Total on-chain transactions: ' + txs)
+    L.push('Balance integrity:           ' + kept + '/' + checked + ' runs matched the expected state')
+    L.push('========================================')
+
+    const blob = new Blob([L.join('\n')], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'cosmos-flow-run-log-' + new Date().toISOString().slice(0, 10) + '.txt'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   async function refreshBalances(acc) {
     if (!acc) return
     try {
@@ -104,7 +194,7 @@ export default function FlowPage() {
     if (!provider || !wallet) { say('Connect a wallet first.', true); return }
 
     setBusy(true)
-    say('Creating token and accounts — the wallet will prompt once…', false)
+    say('Creating token and accounts — the wallet will prompt twice…', false)
 
     try {
       const web3 = await import('@solana/web3.js')
@@ -119,13 +209,19 @@ export default function FlowPage() {
         return
       }
 
-      const acc = await runSetup({ web3, spl, connection, provider, owner })
+      const acc = await runSetup({
+        web3, spl, connection, provider, owner,
+        onNotice: (m) => say(m, false),
+      })
       setAccounts(acc)
       setSetupSigs(acc.signatures)
       await refreshBalances(acc)
       say('Setup complete. ' + INITIAL_SUPPLY + ' test tokens minted to your account.', false)
     } catch (e) {
-      say('Setup failed: ' + readableError(e), true)
+      console.error('SETUP ERROR — full object:', e)
+      console.error('SETUP ERROR — message:', e && e.message)
+      console.error('SETUP ERROR — logs:', e && e.logs)
+      say('Setup failed: ' + (e && e.message ? e.message : readableError(e)), true)
     } finally {
       setBusy(false)
     }
@@ -157,8 +253,21 @@ export default function FlowPage() {
       const pubkey = new web3.PublicKey(wallet)
 
       const balance = await connection.getBalance(pubkey)
-      if (balance <= 0) {
-        say('This wallet holds no Devnet SOL. Request test tokens at faucet.solana.com and try again.', true)
+      if (balance < 5000000) {
+        say('Not enough Devnet SOL for fees. Request more at faucet.solana.com and try again.', true)
+        setBusy(false)
+        return
+      }
+
+      // Check the token balance before transferring: stop early rather than
+      // failing at step two and wasting fees
+      const before = await snapshotBalances(accounts)
+      if (before && Number(before.owner) < FLOW_AMOUNT) {
+        say(
+          'Your token account holds ' + before.owner + ', and this flow moves ' +
+          FLOW_AMOUNT + '. Run SETUP again to mint a fresh allocation.',
+          true
+        )
         setBusy(false)
         return
       }
@@ -170,11 +279,35 @@ export default function FlowPage() {
         pubkey,
         stepDefs: STEPS,
         ctx: { flowId: id, amount: FLOW_AMOUNT, accounts, spl },
+        onNotice: (m) => say(m, false),
         failAt,
         onUpdate: (s, fs) => { setSteps(s); setFlowState(fs) },
       })
 
-      await refreshBalances(accounts)
+      const after = await snapshotBalances(accounts)
+      setBalances(after)
+
+      setRunHistory((h) => h.concat([{
+        run: h.length + 1,
+        flowId: id,
+        time: new Date().toISOString(),
+        injection: failAt === 0 ? 'NONE' : 'FAIL AT ' + failAt,
+        outcome: result.flowState,
+        balancesBefore: before,
+        balancesAfter: after,
+        balanceReturned: before && after
+          ? (before.owner === after.owner &&
+             before.escrow === after.escrow &&
+             before.recipient === after.recipient)
+          : null,
+        steps: result.steps.map((st) => ({
+          id: st.id,
+          label: st.label,
+          status: st.status,
+          executed: st.signature || null,
+          compensated: st.compensationSignature || null,
+        })),
+      }]))
 
       if (result.flowState === FLOW_STATE.COMPLETED) {
         say('All three steps completed. Every transaction is verifiable on Solscan.', false)
@@ -260,7 +393,7 @@ export default function FlowPage() {
                 )}
                 <div className={styles.controlHint}>
                   Creates a test SPL token, mints {INITIAL_SUPPLY} to your account,
-                  and opens an escrow and a recipient account. One wallet prompt.
+                  and opens an escrow and a recipient account. Two wallet prompts.
                   Needed once before running the flow.
                 </div>
               </div>
@@ -311,6 +444,24 @@ export default function FlowPage() {
                 ) : null}
               </div>
             </div>
+
+            {runHistory.length > 0 ? (
+              <>
+                <div className={styles.divider} />
+                <div className={styles.controlRow}>
+                  <div className={styles.controlLabel}>RUN LOG</div>
+                  <div className={styles.controlBody}>
+                    <button className={styles.btnGhost} onClick={exportLog} disabled={busy}>
+                      DOWNLOAD LOG ({runHistory.length})
+                    </button>
+                    <div className={styles.controlHint}>
+                      Every run in this session, with signatures, balances and a summary.
+                      Downloads as a text file. Cleared if the page is refreshed.
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : null}
 
             {message ? (
               <div className={isError ? styles.msgError : styles.msgOk}>{message}</div>
