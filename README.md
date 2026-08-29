@@ -44,10 +44,10 @@ Every signature below resolves on Solscan.
 
 | Account | Address |
 |---|---|
-| Mint | `[copy from log]` |
-| Owner | `[copy from log]` |
-| Escrow | `[copy from log]` |
-| Recipient | `[copy from log]` |
+| Mint | `[DGs2LTaSTUcKCYZuhnVcsvUU2nuZQxmVQmpT7yytrph1]` |
+| Owner | `[E9Qrx2cubx4nug1VwwEB68gkyrR2JeBrD5MV26WX6bUW]` |
+| Escrow | `[2ggjxBvGaRDmDmDtTWbhEhu3T6d5wonR2JCbBan5gTSh]` |
+| Recipient | `[DWRHAuc9QPaSDD64FB33tHHazAkcanWH7kvzGDfNH3u8]` |
 
 ### Run 01 — no failure injected
 
@@ -55,9 +55,9 @@ Balances `1000000 / 0 / 0` → `999000 / 0 / 1000`
 
 | Step | Action | Signature |
 |---|---|---|
-| 1 · Approve | Executed | `[copy from log]` |
-| 2 · Vesting | Executed | `[copy from log]` |
-| 3 · Distribution | Executed | `[copy from log]` |
+| 1 · Approve | Executed | `[4GYAt6sBdVUNuYyHitay5ThpnyZFkqDAUFcihiC6E22LRmgcgXePQmVR6MKnuZidmDJpTSai2rYqyqTJ2SVNFZWx]` |
+| 2 · Vesting | Executed | `[v9veWQrFb1Ld8X1S4dX7yduVWpVRUJc7pztp6rKbKRRwwhhTZDPE73BBGmegAGztGnbmwShG5L32nsHNwFa91kt]` |
+| 3 · Distribution | Executed | `[5oiG6ouiCCvYJDubv4M1W1iEiz963qeicp2bWZqgkK6ZEyeRrGTbrjBCyM1Ea6ph7uL24opz2LFqQDiFG6Ni7PxV]` |
 
 ### Run 02 — failure at step 3
 
@@ -65,10 +65,10 @@ Balances unchanged: `999000 / 0 / 1000` → `999000 / 0 / 1000`
 
 | Step | Action | Signature |
 |---|---|---|
-| 1 · Approve | Executed | `[copy from log]` |
-| 1 · Approve | Compensated | `[copy from log]` |
-| 2 · Vesting | Executed | `[copy from log]` |
-| 2 · Vesting | Compensated | `[copy from log]` |
+| 1 · Approve | Executed | `[2ZKU6Z1WrMw2ciTEXjWoN8mBFWPsv1pKX8TRfL5yPzgN9TUxoihmGRvncFmcmeeXNa638tudE6XsHb4otQ891eMs]` |
+| 1 · Approve | Compensated | `[3ACTJ2cPepT4kcEopjy7edyLVBe2PScaQZsgwNR2KMFWoBzZa5Mx235qdCW4WWApxsma8eg94apwUtncdjrU3DAr]` |
+| 2 · Vesting | Executed | `[5drqaf7m61izJcs9JBCuXDm7ijTYp1NR7CPnNVR29VqrPGnRJBFo1UDhrVBcACb4rthB4CBmxkbF8kz7QtR93u3x]` |
+| 2 · Vesting | Compensated | `[Ye8SqPdmNvsKhKAyRQ6G35MapHRzXqQSdueEtVnibYJ3a3qH6swEwFV5SpG9bUvMgtgTkgFovZMuaQHa2vaLNEu]` |
 | 3 · Distribution | Failed (injected) | — |
 
 Step two moved 1000 tokens into escrow. Step three failed. The compensating
@@ -81,8 +81,8 @@ Balances unchanged. Two transactions.
 
 | Step | Action | Signature |
 |---|---|---|
-| 1 · Approve | Executed | `[copy from log]` |
-| 1 · Approve | Compensated | `[copy from log]` |
+| 1 · Approve | Executed | `[McDmap44ANPNqiB9wWNEPus1uLBX6WE5iYJ7n98JQFsBcPVxKM8cJv14bSxbu23VAkfQLTgS2rnpGN83Ba11cuw]` |
+| 1 · Approve | Compensated | `[38MqyHVLSinbzi2M48HtG1S8MTpj7j4QQ2Byu1T3nt5BLpCwQ8WRPPHhzYQpJfPWCpbcPvb5wp8oe7UZcHwvPJf3]` |
 | 2 · Vesting | Failed (injected) | — |
 | 3 · Distribution | Not run | — |
 
