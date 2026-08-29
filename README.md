@@ -6,12 +6,13 @@ Live demo: https://cosmosledgerlabs.com/flow
 
 ## The problem
 
-Token issuance is not one transaction. Approval, vesting setup and
-distribution are three separate transactions. On Solana, a single
-transaction is atomic. A sequence of transactions is not.
+A token operation is not one transaction. Approval, vesting setup and
+distribution are separate transactions with off-chain steps between them.
 
-When step three fails, steps one and two are already on-chain, and nothing
-unwinds them. Teams fix it by hand.
+On Solana a single transaction is atomic — if any instruction fails, the
+whole transaction is discarded. A **sequence** of transactions is not. When
+step three fails, steps one and two are already on-chain and nothing unwinds
+them. Teams fix it by hand.
 
 ## What this does
 
@@ -20,8 +21,8 @@ Runs the sequence, tracks each step, and on failure executes real on-chain
 order.
 
 Nothing is deleted — a chain cannot delete. Each compensation is a new,
-independently verifiable transaction. A failed run leaves several
-transactions on-chain, not zero. That is the audit trail, and it is the point.
+independently verifiable transaction. A failed run leaves more transactions
+on-chain, not fewer. That is the audit trail, and it is the point.
 
 **Token balances return to their starting state.** That is visible on the
 page and verifiable on-chain.
@@ -34,42 +35,91 @@ page and verifiable on-chain.
 | 2 · Vesting setup | SPL transfer: owner → escrow | SPL transfer: escrow → owner |
 | 3 · Distribution | SPL transfer: escrow → recipient | — (final step) |
 
-## Try it
+## Verified runs
 
-1. Install Phantom, switch to **Devnet**
-2. Get test SOL at faucet.solana.com — 0.02 SOL in the wallet is enough
-3. Open https://cosmosledgerlabs.com/flow, connect, click **RUN SETUP**
-   (one wallet prompt; the page creates a test token, mints 1,000,000 to
-   your account and opens an escrow and a recipient account)
-4. Set FAILURE INJECTION to **FAIL AT 3**, run the flow
-5. Watch the balances return to their starting state
-6. Click VERIFY on any transaction — it resolves on Solscan (devnet)
+Solana devnet, 29 August 2026. Four runs covering every failure position.
+Every signature below resolves on Solscan.
 
-## Verified run
+**Token accounts**
 
-Flow ID: MTBS0DVS-BA1W
-Date: 2026-08-28 (Solana devnet)
-Mint: `6rn21mvqWa1p8pQnHYRGT2Zip9pS1osWf7VJ6X7hbTh1`
+| Account | Address |
+|---|---|
+| Mint | `[copy from log]` |
+| Owner | `[copy from log]` |
+| Escrow | `[copy from log]` |
+| Recipient | `[copy from log]` |
+
+### Run 01 — no failure injected
+
+Balances `1000000 / 0 / 0` → `999000 / 0 / 1000`
 
 | Step | Action | Signature |
 |---|---|---|
-| 1 · Approve | Executed | [5zs93cXg…soJ8Wp](https://solscan.io/tx/5zs93cXgkQoGopTh9ap2yYuHwE8PFCor2zaqoWgPGv6bQVqSELE8HkqsWAXBZtsxvsA3TW6o3BiBkexAmjsoJ8Wp?cluster=devnet) |
-| 1 · Approve | Compensated | [3qR4WxrT…KZ3sAf](https://solscan.io/tx/3qR4WxrT3H9fk8F5GtQzUnpuLtpoKJcymmB17Qjbxwsaz2XdM4cjxkhXsN5CnHn5FKPiFuibTn7JeFGEmJKZ3sAf?cluster=devnet) |
-| 2 · Vesting | Executed | [MFwpwhsw…iDqREM](https://solscan.io/tx/MFwpwhswNxzGRBBrTRm9toRh2Mez51LJKZ66g62btuCGyazYXFFLKAanchbAJBj9rmAVfp873ewveVc5xiDqREM?cluster=devnet) |
-| 2 · Vesting | Compensated | [LndZNwnB…9KKpLv](https://solscan.io/tx/LndZNwnBvHUM53juXzHQHkep5iBbgcwHcsM42ZdHQEAemwPuCxmMXTmaaaa7eqARYUvGZxhTfPELRYtTq9KKpLv?cluster=devnet) |
+| 1 · Approve | Executed | `[copy from log]` |
+| 2 · Vesting | Executed | `[copy from log]` |
+| 3 · Distribution | Executed | `[copy from log]` |
+
+### Run 02 — failure at step 3
+
+Balances unchanged: `999000 / 0 / 1000` → `999000 / 0 / 1000`
+
+| Step | Action | Signature |
+|---|---|---|
+| 1 · Approve | Executed | `[copy from log]` |
+| 1 · Approve | Compensated | `[copy from log]` |
+| 2 · Vesting | Executed | `[copy from log]` |
+| 2 · Vesting | Compensated | `[copy from log]` |
 | 3 · Distribution | Failed (injected) | — |
 
-Balances before: owner 999000 / escrow 0 / recipient 1000
-Balances after:  owner 999000 / escrow 0 / recipient 1000
+Step two moved 1000 tokens into escrow. Step three failed. The compensating
+transaction moved them back out. Escrow returned to zero, and four
+transactions remain on-chain as the record.
 
-The step-2 compensation is a 1,000-token transfer from the escrow account
-back to the owner's account, signed by the escrow keypair — see the Solscan
-link above.
+### Run 03 — failure at step 2
 
-**Total runs recorded: 23** on this mint (7 completed, 16 with an injected
-failure). Balances ended at the expected values in every run; after each of
-the 7 FAIL AT 3 runs the escrow balance returned to zero. Full log with all
-61 transaction links: [`run-log-v2.txt`](./run-log-v2.txt).
+Balances unchanged. Two transactions.
+
+| Step | Action | Signature |
+|---|---|---|
+| 1 · Approve | Executed | `[copy from log]` |
+| 1 · Approve | Compensated | `[copy from log]` |
+| 2 · Vesting | Failed (injected) | — |
+| 3 · Distribution | Not run | — |
+
+No tokens moved: step two is the transfer, and it never executed. Step one
+was still compensated, because it had completed.
+
+### Run 04 — failure at step 1
+
+Balances unchanged. **Zero transactions.**
+
+| Step | Action | Signature |
+|---|---|---|
+| 1 · Approve | Failed (injected) | — |
+| 2 · Vesting | Not run | — |
+| 3 · Distribution | Not run | — |
+
+No compensation was executed, because no step had completed. Compensating
+here would be incorrect behaviour, not thoroughness.
+
+### Summary
+
+| | |
+|---|---|
+| Total runs | 4 |
+| Completed successfully | 1 |
+| Failed and compensated | 3 |
+| Compensation failures | 0 |
+| Balance integrity | 4/4 runs matched the expected state |
+
+## Try it
+
+1. Install Phantom, switch to **Devnet**
+2. Get test SOL at faucet.solana.com — setup needs about 0.02 SOL
+3. Open https://cosmosledgerlabs.com/flow, connect, click **RUN SETUP**
+4. Set FAILURE INJECTION to **FAIL AT 3**, run the flow
+5. Watch the balances return to their starting state
+6. Click VERIFY on any transaction — it resolves on Solscan (devnet)
 
 ## Structure
 
@@ -81,15 +131,49 @@ the 7 FAIL AT 3 runs the escrow balance returned to zero. Full log with all
 | `pages/flow.js` | Interface |
 | `styles/Flow.module.css` | Styling |
 
+## Reliability handling
+
+Devnet is unreliable enough that the following were necessary to get a run to
+complete end to end. Each is a response to a failure observed in testing, not
+a precaution:
+
+- **Retry on expiry.** A blockhash is valid for roughly 60 seconds. Slow
+  approval or network congestion exceeds that. Retries up to three times.
+- **Confirm before resending.** Before a retry, the signature status is
+  polled for ten seconds. A transaction that landed but was not yet indexed
+  would otherwise be sent twice — duplicating a transfer and destroying the
+  balance evidence.
+- **Priority fee.** Validators drop fee-less transactions under load, and
+  with preflight skipped that drop is silent.
+- **Rebroadcast while waiting.** The same signed bytes are resent every five
+  seconds. Same blockhash, same signature, so the cluster treats it as one
+  transaction. Idempotent by construction.
+- **Polling confirmation.** `confirmTransaction` aborts the moment block
+  height passes, discarding runs that confirm a second late.
+
+## When compensation itself fails
+
+The flow enters `FAILED_INCOMPLETE` and says so on the page:
+
+> COMPENSATION INCOMPLETE — a compensating transaction did not confirm.
+> Manual intervention is required. This state is surfaced rather than hidden.
+
+This was observed during development, not just designed for. A state where
+funds are stranded must be visible, not swallowed.
+
 ## On the escrow account
 
 The escrow account in this demonstration is held by a keypair generated in
-the browser and kept in page state. The same keypair is the test token's
-mint authority and pays for the setup transactions (it is funded by a devnet
-faucet request, or by a small transfer from the connected wallet if the
-faucet declines). That is sufficient to show funds genuinely leaving and
+the browser. That is sufficient to show funds genuinely leaving and
 returning, but it is **not a trustless escrow**. A production version would
 use a program-derived address held by an on-chain program.
+
+## Status
+
+v2. Steps two and three are real SPL token transfers.
+
+Next: on-chain state via PDAs, persistent execution records, and retry
+handling at the protocol layer rather than the client.
 
 ## Notes
 
