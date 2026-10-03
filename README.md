@@ -3,6 +3,7 @@
 Cross-transaction consistency for multi-step token operations on Solana.
 
 Live demo: https://cosmosledgerlabs.com/flow
+Live demo source (current, runnable app): https://github.com/cosmosledgerlabs/cosmosledgerlabs-website — `pages/flow.js` and `lib/`
 
 ## The problem
 
@@ -120,15 +121,22 @@ here would be incorrect behaviour, not thoroughness.
 4. Set FAILURE INJECTION to **FAIL AT 3**, run the flow
 5. Watch the balances return to their starting state
 6. Click VERIFY on any transaction — it resolves on Solscan (devnet)
+7. Under RUN LOG, check the run summary line ends in **BALANCE CHECK: PASS**
+8. Refresh the page — the run is still listed (saved in your browser)
+9. Click **DOWNLOAD CSV** for a one-row-per-run spreadsheet, or **DOWNLOAD LOG** for the text record
 
 ## Structure
+
+The files below are the engine as built in August 2026. The live page's
+current version — including the hackathon additions — is `pages/flow.js` in
+the website repository linked above.
 
 | File | Purpose |
 |---|---|
 | `lib/steps.js` | Step definitions and their compensating actions |
 | `lib/orchestrator.js` | State machine and compensation engine |
 | `lib/spl.js` | SPL token setup and helpers |
-| `pages/flow.js` | Interface |
+| `pages/flow.js` | Interface (August version; see the website repository for the current one) |
 | `styles/Flow.module.css` | Styling |
 
 ## Reliability handling
@@ -168,12 +176,60 @@ the browser. That is sufficient to show funds genuinely leaving and
 returning, but it is **not a trustless escrow**. A production version would
 use a program-derived address held by an on-chain program.
 
+## Development history
+
+This repository is disclosed in full. Every commit is dated, and the dates
+below can be checked in the commit history.
+
+### Built before the hackathon (25–30 August 2026)
+
+All of the following existed before the Crypto World's Fair window opened on
+14 September 2026:
+
+| Dates | Work |
+|---|---|
+| 25–26 Aug 2026 | v1: three-step flow using Memo transactions, orchestration engine with compensation handling, flow page and styles, first README |
+| 27–28 Aug 2026 | v2: real SPL token transfers in steps 2 and 3, SPL setup helpers, balance display, 23-run test log (`run-log-v2.txt`) |
+| 29–30 Aug 2026 | Run history and log export, priority fee, polling confirmation, rebroadcast and duplicate-send guard; four verified devnet runs (29 Aug) documented in this README |
+
+The live page at cosmosledgerlabs.com/flow runs inside the company website
+repository (`cosmosledgerlabs/cosmosledgerlabs-website`), which supplies the
+site header, footer, bilingual text and build configuration. **The current
+code of the live demo is in that repository** (`pages/flow.js`, `lib/`); this
+repository keeps the original engine files from August 2026. Between 3 and
+13 September 2026 — still before the window — the live page also received a
+how-to-use panel, bilingual (EN / Traditional Chinese) text and layout
+changes; the engine was unchanged.
+
+### Built during the hackathon (14 September – 12 October 2026)
+
+All of the following was committed to `cosmosledgerlabs/cosmosledgerlabs-website`
+inside the competition window. Dates are commit dates and can be checked in
+that repository's history.
+
+| Date | Change |
+|---|---|
+| **3 Oct 2026** | **Persistent run records.** Every run is saved in the visitor's browser and survives a page refresh (previously the history was lost on refresh). A CLEAR button removes saved runs. |
+| **3 Oct 2026** | **CSV report.** New DOWNLOAD CSV button: one row per run — flow ID, wallet, mint, failure injected, result, steps executed and compensated, transaction count, balances before and after, balance check, and every signature. Opens in Excel, Google Sheets or Numbers. |
+| **3 Oct 2026** | **Per-run balance check.** Each run is checked against its expected end state: completed → owner down by the flow amount and recipient up by it; failed and compensated → every balance back exactly where it started. Shown as PASS / FAIL on the page, in the text log and in the CSV. This also fixes the August log summary, which counted completed runs as not matching. |
+| **3 Oct 2026** | **Run summary on the page.** The last five runs are listed under the log buttons: failure injected, steps executed, steps compensated, transactions, balance check. |
+| **3 Oct 2026** | "Demo updated" date line under the demo. |
+| 23–24 Sep 2026 | Full-screen mode for the demo (also exits on navigation), screen wake lock for recordings and booths, auto-fitting message box. |
+| 25–26 Sep 2026 | Revised wallet-connection and failure-mode instructions; revised Chinese disclaimer. |
+| 18–25 Sep 2026 | Demo video embedded on the page; text-alignment fixes. |
+
+The compensation engine itself (`lib/steps.js`, `lib/orchestrator.js`,
+`lib/spl.js`) was built before the window and is disclosed above.
+
 ## Status
 
-v2. Steps two and three are real SPL token transfers.
+v2. Steps two and three are real SPL token transfers. Since 3 October 2026,
+run records persist in the browser, export to CSV, and every run carries an
+automatic balance check.
 
-Next: on-chain state via PDAs, persistent execution records, and retry
-handling at the protocol layer rather than the client.
+Next: on-chain state via PDAs, server-side execution records shared across
+devices and operators, and retry handling at the protocol layer rather than
+the client.
 
 ## Notes
 
