@@ -3,6 +3,7 @@
 Cross-transaction consistency for multi-step token operations on Solana.
 
 Live demo: https://cosmosledgerlabs.com/flow
+
 Live demo source (current, runnable app): https://github.com/cosmosledgerlabs/cosmosledgerlabs-website — `pages/flow.js` and `lib/`
 
 ## The problem
@@ -213,7 +214,6 @@ that repository's history.
 | **3 Oct 2026** | **CSV report.** New DOWNLOAD CSV button: one row per run — flow ID, wallet, mint, failure injected, result, steps executed and compensated, transaction count, balances before and after, balance check, and every signature. Opens in Excel, Google Sheets or Numbers. |
 | **3 Oct 2026** | **Per-run balance check.** Each run is checked against its expected end state: completed → owner down by the flow amount and recipient up by it; failed and compensated → every balance back exactly where it started. Shown as PASS / FAIL on the page, in the text log and in the CSV. This also fixes the August log summary, which counted completed runs as not matching. |
 | **3 Oct 2026** | **Run summary on the page.** The last five runs are listed under the log buttons: failure injected, steps executed, steps compensated, transactions, balance check. |
-| **3 Oct 2026** | "Demo updated" date line under the demo. |
 | 23–24 Sep 2026 | Full-screen mode for the demo (also exits on navigation), screen wake lock for recordings and booths, auto-fitting message box. |
 | 25–26 Sep 2026 | Revised wallet-connection and failure-mode instructions; revised Chinese disclaimer. |
 | 18–25 Sep 2026 | Demo video embedded on the page; text-alignment fixes. |
