@@ -221,6 +221,16 @@ that repository's history.
 The compensation engine itself (`lib/steps.js`, `lib/orchestrator.js`,
 `lib/spl.js`) was built before the window and is disclosed above.
 
+## Credits and third-party code
+
+Built by the founder of COSMOS Ledger Labs together with the founder's
+assistant, using AI-assisted development (Claude by Anthropic). The founder
+designed the architecture and directs the work.
+
+Open-source libraries are used as dependencies only: Next.js, React,
+`@solana/web3.js` and `@solana/spl-token`, plus Solana's SPL Token and Memo
+programs. No code was copied from other projects.
+
 ## Status
 
 v2. Steps two and three are real SPL token transfers. Since 3 October 2026,
